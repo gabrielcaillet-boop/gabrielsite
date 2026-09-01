@@ -1,238 +1,121 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Primeira Galeria - GitHub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogo de Futebol Interativo</title>
 
-    <style>
-        /* --- VARIÁVEIS DE TEMA --- */
-        :root {
-            --bg-body: #f4f7f6;
-            --bg-card: #ffffff;
-            --text-primary: #2c3e50;
-            --text-secondary: #666666;
-            --border-color: #e0e0e0;
-            --btn-like: #ff4757;
-            --btn-like-hover: #e84118;
-            --btn-liked: #2ed573;
-        }
+<style>
+    body {
+        margin: 0;
+        background: #0d1117;
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
 
-        /* --- RESET & GLOBAL --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+    h1 {
+        margin: 10px 0 5px 0;
+        font-size: 2.2rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
 
-        body {
-            background-color: var(--bg-body);
-            color: #333;
-        }
+    p {
+        font-size: 15px;
+        color: #a3b8cc;
+        margin-bottom: 15px;
+    }
 
-        /* --- CABEÇALHO --- */
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            background-color: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        header h1 {
-            color: var(--text-primary);
-            margin-bottom: 10px;
-        }
-
-        /* --- GALERIA & CARDS --- */
-        .gallery-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            padding: 40px 20px;
-        }
-
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 300px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        .card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .card-content {
-            padding: 20px;
-        }
-
-        .card-content h3 {
-            margin-bottom: 10px;
-            color: var(--text-primary);html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Primeira Galeria - GitHub</title>
-
-    <style>
-        /* --- VARIÁVEIS DE TEMA --- */
-        :root {
-            --bg-body: #f4f7f6;
-            --bg-card: #ffffff;
-            --text-primary: #2c3e50;
-            --text-secondary: #666666;
-            --border-color: #e0e0e0;
-            --btn-like: #ff4757;
-            --btn-like-hover: #e84118;
-            --btn-liked: #2ed573;
-        }
-
-        /* --- RESET & GLOBAL --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: #333;
-        }
-
-        /* --- CABEÇALHO --- */
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            background-color: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        header h1 {
-            color: var(--text-primary);
-            margin-bottom: 10px;
-        }
-
-        /* --- GALERIA & CARDS --- */
-        .gallery-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            padding: 40px 20px;
-        }
-
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 300px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        }
-
-        .card-content p {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        /* --- BOTÃO INTERATIVO --- */
-        .like-btn {
-            background-color: var(--btn-like);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
-        }
-
-        .like-btn:hover {
-            background-color: var(--btn-like-hover);
-        }
-
-        .like-btn.liked {
-            background-color: var(--btn-liked);
-        }
-    </style>
+    canvas {
+        background: #2e8b57;
+        border: 4px solid #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+        max-width: 95%;
+    }
+</style>
 </head>
+
 <body>
 
-    <header>
-        <h1>📸 Meu Primeiro Feed Interativo</h1>
-        <p>Projeto criado nas aulas de Web Development e hospedado no GitHub!</p>
-    </header>
+<h1>⚽ Futebol Show</h1>
+<p><b>WASD / Setas</b>: Mover | <b>Espaço</b>: Chutar Forte | <b>Empurre a bola</b> para conduzir</p>
 
-    <main class="gallery-container">
+<canvas id="campo" width="900" height="500"></canvas>
 
-        <article class="card">
-            <img src="https://picsum.photos/id/1015/300/200" alt="Paisagem de Montanha">
-            <div class="card-content">
-                <h3>Aventura nas Montanhas</h3>
-                <p>Um dia incrível explorando a natureza e testando meus códigos.</p>
-                <button class="like-btn" aria-label="Curtir publicação">
-                    ❤️ <span class="like-count">0</span> Curtidas
-                </button>
-            </div>
-        </article>
+<script>
+const canvas = document.getElementById("campo");
+const ctx = canvas.getContext("2d");
 
-        <article class="card">
-            <img src="https://picsum.photos/id/1025/300/200" alt="Cachorro fofo">
-            <div class="card-content">
-                <h3>Meu Companheiro de Code</h3>
-                <p>Garante que o código não tenha nenhum bug (ou sim!).</p>
-                <button class="like-btn" aria-label="Curtir publicação">
-                    ❤️ <span class="like-count">0</span> Curtidas
-                </button>
-            </div>
-        </article>
+// Estado do Jogo
+let placarJogador = 0;
+let placarIA = 0;
+let tempoRestante = 60; // Segundos
+let jogoAtivo = true;
 
-        <article class="card">
-            <img src="https://picsum.photos/id/1043/300/200" alt="Espaço de trabalho">
-            <div class="card-content">
-                <h3>Setup Organizado</h3>
-                <p>Foco total nas aulas de HTML, CSS e JavaScript desta semana.</p>
-                <button class="like-btn" aria-label="Curtir publicação">
-                    ❤️ <span class="like-count">0</span> Curtidas
-                </button>
-            </div>
-        </article>
+const jogador = {
+    x: 250,
+    y: 250,
+    tamanho: 18,
+    velocidade: 4.5,
+    cor: "#0088ff"
+};
 
-    </main>
+const goleiro = {
+    x: 840,
+    y: 250,
+    tamanho: 18,
+    velocidade: 2.8,
+    cor: "#ff3333"
+};
 
-    <script>
-        const botoesLike = document.querySelectorAll('.like-btn');
+const bola = {
+    x: 450,
+    y: 250,
+    raio: 9,
+    vx: 0,
+    vy: 0,
+    atrito: 0.981
+};
 
-        botoesLike.forEach(botao => {
-            botao.addEventListener('click', () => {
-                const spanContador = botao.querySelector('.like-count');
-                const isLiked = botao.classList.toggle('liked');
-                
-                let curtidas = parseInt(spanContador.textContent, 10);
-                spanContador.textContent = isLiked ? curtidas + 1 : curtidas - 1;
-            });
-        });
-    </script>
-</body>
-</html>
+const gol = {
+    x: 860,
+    y: 170,
+    largura: 30,
+    altura: 160
+};
+
+let teclas = {};
+
+// Eventos de teclado com prevenção do scroll da tela nas setas e espaço
+document.addEventListener("keydown", e => {
+    teclas[e.key.toLowerCase()] = true;
+    if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
+        e.preventDefault();
+    }
+    if (e.code === "Space" && jogoAtivo) {
+        chutar();
+    }
+});
+
+document.addEventListener("keyup", e => {
+    teclas[e.key.toLowerCase()] = false;
+});
+
+// Timer do jogo
+const cronometro = setInterval(() => {
+    if (tempoRestante > 0) {
+        tempoRestante--;
+    } else {
+        jogoAtivo = false;
+        clearInterval(cronometro);
+    }
+}, 1000);
+
+function chutar() {
+    const dx = bola.
