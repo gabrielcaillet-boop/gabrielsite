@@ -31,12 +31,38 @@
         margin-bottom: 15px;
     }
 
+    .game-container {
+        position: relative;
+    }
+
     canvas {
         background: #2e8b57;
         border: 4px solid #ffffff;
         border-radius: 8px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
         max-width: 95%;
+    }
+
+    #btnReiniciar {
+        display: none;
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 12px 24px;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        background: #28a745;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        transition: background 0.2s;
+    }
+
+    #btnReiniciar:hover {
+        background: #218838;
     }
 </style>
 </head>
@@ -46,22 +72,60 @@
 <h1>⚽ Futebol Show</h1>
 <p><b>WASD / Setas</b>: Mover | <b>Espaço</b>: Chutar Forte | <b>Empurre a bola</b> para conduzir</p>
 
-<canvas id="campo" width="900" height="500"></canvas>
+<div class="game-container">
+    <canvas id="campo" width="900" height="500"></canvas>
+    <button id="btnReiniciar" onclick="reiniciarJogo()">Jogar Novamente</button>
+</div>
 
 <script>
 const canvas = document.getElementById("campo");
 const ctx = canvas.getContext("2d");
+const btnReiniciar = document.getElementById("btnReiniciar");
+
+// Áudio via Web Audio API
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function tocarSomChute() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.15);
+    gain.gain.setValueAtTime(1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.15);
+}
+
+function tocarSomGol() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.5);
+}
 
 // Estado do Jogo
 let placarJogador = 0;
-let tempoRestante = 60; // Segundos
+let tempoRestante = 60;
 let jogoAtivo = true;
+let cronometro = null;
 
 const jogador = {
     x: 250,
     y: 250,
     tamanho: 18,
-    velocidade: 4.5,
+    velocidade: 5.0,
     cor: "#0088ff"
 };
 
@@ -69,7 +133,7 @@ const goleiro = {
     x: 840,
     y: 250,
     tamanho: 18,
-    velocidade: 2.8,
+    velocidade: 1.8,
     cor: "#ff3333"
 };
 
@@ -91,7 +155,6 @@ const gol = {
 
 let teclas = {};
 
-// Eventos de teclado
 document.addEventListener("keydown", e => {
     teclas[e.key.toLowerCase()] = true;
     if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
@@ -106,15 +169,19 @@ document.addEventListener("keyup", e => {
     teclas[e.key.toLowerCase()] = false;
 });
 
-// Temporizador de partida
-const cronometro = setInterval(() => {
-    if (tempoRestante > 0) {
-        tempoRestante--;
-    } else {
-        jogoAtivo = false;
-        clearInterval(cronometro);
-    }
-}, 1000);
+function iniciarCronometro() {
+    cronometro = setInterval(() => {
+        if (tempoRestante > 0) {
+            tempoRestante--;
+        } else {
+            jogoAtivo = false;
+            btnReiniciar.style.display = "block";
+            clearInterval(cronometro);
+        }
+    }, 1000);
+}
+
+iniciarCronometro();
 
 function chutar() {
     const dx = bola.x - jogador.x;
@@ -122,8 +189,9 @@ function chutar() {
     const distancia = Math.hypot(dx, dy);
 
     if (distancia < jogador.tamanho + bola.raio + 15) {
+        tocarSomChute();
         const angulo = Math.atan2(dy, dx);
-        const força = 13;
+        const força = 14;
         bola.vx = Math.cos(angulo) * força;
         bola.vy = Math.sin(angulo) * força;
     }
@@ -145,12 +213,16 @@ function moverGoleiro() {
     if (!jogoAtivo) return;
 
     const centroGolY = gol.y + gol.altura / 2;
-    let alvoY = bola.x > canvas.width / 2 ? bola.y : centroGolY;
+    let alvoY = centroGolY;
+
+    if (bola.x > canvas.width * 0.55) {
+        alvoY = bola.y;
+    }
 
     alvoY = Math.max(gol.y + goleiro.tamanho, Math.min(gol.y + gol.altura - goleiro.tamanho, alvoY));
 
-    if (goleiro.y < alvoY - 2) goleiro.y += goleiro.velocidade;
-    else if (goleiro.y > alvoY + 2) goleiro.y -= goleiro.velocidade;
+    if (goleiro.y < alvoY - 5) goleiro.y += goleiro.velocidade;
+    else if (goleiro.y > alvoY + 5) goleiro.y -= goleiro.velocidade;
 }
 
 function processarColisoes() {
@@ -201,6 +273,7 @@ function moverBola() {
         const dentroDoGolY = bola.y > gol.y && bola.y < gol.y + gol.altura;
 
         if (dentroDoGolY) {
+            tocarSomGol();
             placarJogador++;
             resetarPosicoes();
         } else {
@@ -221,6 +294,16 @@ function resetarPosicoes() {
 
     goleiro.x = 840;
     goleiro.y = 250;
+}
+
+function reiniciarJogo() {
+    placarJogador = 0;
+    tempoRestante = 60;
+    jogoAtivo = true;
+    btnReiniciar.style.display = "none";
+    resetarPosicoes();
+    clearInterval(cronometro);
+    iniciarCronometro();
 }
 
 function desenharCampo() {
@@ -292,11 +375,9 @@ function desenharCampo() {
 
         ctx.fillStyle = "#ffffff";
         ctx.font = "bold 36px Arial";
-        ctx.fillText("FIM DE JOGO!", canvas.width / 2 - 120, canvas.height / 2 - 20);
+        ctx.fillText("FIM DE JOGO!", canvas.width / 2 - 120, canvas.height / 2 - 40);
         ctx.font = "22px Arial";
-        ctx.fillText("Total de Gols: " + placarJogador, canvas.width / 2 - 80, canvas.height / 2 + 20);
-        ctx.font = "16px Arial";
-        ctx.fillText("Atualize a página para jogar novamente", canvas.width / 2 - 140, canvas.height / 2 + 60);
+        ctx.fillText("Total de Gols: " + placarJogador, canvas.width / 2 - 80, canvas.height / 2);
     }
 }
 
