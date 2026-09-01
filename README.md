@@ -118,4 +118,4 @@ const cronometro = setInterval(() => {
 }, 1000);
 
 function chutar() {
-    const dx = bola.meusite
+    const dx = bola.
